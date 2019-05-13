@@ -1,6 +1,6 @@
-# Hux Blog
+# gkh Blog
 
-### [View Live Hux Blog &rarr;](https://huangxuan.me)
+### [View Live gkh Blog &rarr;](https://www.gongkuihua.cn)
 
 ![](http://huangxuan.me/img/blog-desktop.jpg)
 
