@@ -10,7 +10,8 @@ tags:
 - js
 ---
 
-#WKWebView的应用
+
+# WKWebView的应用
 在ios12.2后UIWebView系统不在给予支持了,要求更新wkwebview,12.2后![image.png](https://upload-images.jianshu.io/upload_images/3889208-71a230210797271a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 而且在12.0后一些网页视频不能播放了,找了很久原因也没有找到,最终的解决方法就是把UIwebView换成WkwebView解决视频播放问题,今天就将自己在集成的时候遇到的问题和迁移方法进行提供,供大家参考.
 对于系统在11.0到11.3之间,网页打开地图闪退,在viewDidLoad添加以下代码解决
@@ -19,8 +20,8 @@ tags:
 	if (iOS_SYSTEM >= 11.0 && iOS_SYSTEM <= 11.3) {
 	        setenv("JSC_useJIT", "false", 0);
 	    }
-###1.初始化wkweb
-####初始化
+# 1.初始化wkweb
+### 初始化
 
 	#import <WebKit/WebKit.h>
 	WKWebView *cq_newWkWeb (void) {
@@ -80,7 +81,7 @@ tags:
 	    }
 	    return _baseWebView;
 	}
-###协议遵守
+### 协议遵守
 	WKNavigationDelegate, WKUIDelegate,
 	
 	#pragma mark - WKNavigationDelegate
@@ -115,10 +116,10 @@ tags:
 	    //不允许跳转
 	    //decisionHandler(WKNavigationResponsePolicyCancel);
 	}
-###2.设置监听
-#####监听标题
+# 2.设置监听
+### 监听标题
 	[_baseWebView addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
-####监听进度条
+### 监听进度条
 	[_baseWebView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
 	
 	监听处理
@@ -139,7 +140,7 @@ tags:
 	        }
 	    }
 	}
-#3.wkweb调用原生弹框
+# 3.wkweb调用原生弹框
 	- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
 	    UIAlertAction *alertActionCancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
 	        // 返回用户选择的信息
@@ -155,15 +156,15 @@ tags:
 	    [alterVC addAction:alertActionOK];
 	    [self presentViewController:alterVC animated:YES completion:nil];
 	}
-#4.js注入
-###对于交互的js注入
+# 4.js注入
+### 对于交互的js注入
 	  //注册所有js
 	    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"AppJsObj" ofType:@"js"];
 	    NSString *js = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
 	    
 	    WKUserScript *jsFile = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:true];
 	    [self.configuration.userContentController addUserScript:jsFile];
-###对于需要改变值的js,例如登陆的js需要在登陆后改变js的值的注入方法
+### 对于需要改变值的js,例如登陆的js需要在登陆后改变js的值的注入方法
 	 //注册用户信息js方法
 	    NSString *jsFunc = [NSString stringWithFormat:@"var New_AppJsObj = {function() {var userinfo;}, getUserInfo: function(){return userinfo},setUserInfo: function(user){userinfo = user},getNetworkType: function(){return '%@'}}",@([CQNetworkManager status])];
 	    WKUserScript *jsFileUserInfo = [[WKUserScript alloc] initWithSource:jsFunc injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:true];
@@ -224,8 +225,8 @@ tags:
 	    }
 	     decisionHandler(WKNavigationActionPolicyAllow);
 	}
-#5自定义userAgent
-####首先在AppDelegate文件中获取系统UA并进行记录
+# 5自定义userAgent
+### 首先在AppDelegate文件中获取系统UA并进行记录
 	// 获取 userAgent
 	    self.wkWeb = [[WKWebView alloc] init];
 	    __weak typeof(self) weakSelf = self;
@@ -236,7 +237,7 @@ tags:
 	        [userD synchronize];
 	        weakSelf.wkWeb = nil;
 	    }];
-####重写UA,并将原来的拼在后面进行更新
+### 重写UA,并将原来的拼在后面进行更新
 	/**
 	 重置UA 
 	 */
@@ -260,7 +261,7 @@ tags:
 	    return newAgent;
 	}
 	
-####在需要更新的地方调用进行UA更新
+### 在需要更新的地方调用进行UA更新
 	self.baseweb.customUserAgent = [WKWebView cq_resetUA];
 	
 在这里整个WkWebView就算迁移或者集成完毕了,希望大家bug少一点,工资多一点,写的不好,请大家指正
